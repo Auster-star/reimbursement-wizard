@@ -370,19 +370,51 @@ function exportCsv() {
     return;
   }
 
-  const headers = ["日期", "金额", "费用类别", "用途/商户", "发票类别", "备注/事由", "申请人", "报销日期"];
-  const rows = records.map((record) => [
-    record.date,
-    record.amount,
-    record.expenseCategory,
-    record.merchant,
-    record.invoiceCategory,
-    record.note,
-    record.applicant,
-    record.reimbursementDate,
-  ]);
+  const headerRow1 = [
+    "申请日期",
+    "报销金额", "", "", "", "", "", "", "", "", "",
+    "发票",
+    "备注/事由",
+    "申请人",
+    "报销日期",
+  ];
 
-  const csvContent = [headers, ...rows]
+  const headerRow2 = [
+    "",
+    "餐费",
+    "交通费",
+    "住宿费",
+    "信息技术服务",
+    "设备采购费",
+    "快递费",
+    "稿费",
+    "会务费",
+    "其他",
+    "合计",
+    "技术公司电子发票/定额/出租车机打发票/纸质票/无发票",
+    "",
+    "",
+    "",
+  ];
+
+  const rows = records.map((record) => {
+    const amount = Number(record.amount || 0).toFixed(2);
+    const amountColumns = expenseCategories.map((category) => (
+      record.expenseCategory === category ? amount : ""
+    ));
+
+    return [
+      record.date,
+      ...amountColumns,
+      amount,
+      formatInvoiceCategoryForExport(record.invoiceCategory),
+      formatRemarkForExport(record),
+      record.applicant,
+      record.reimbursementDate,
+    ];
+  });
+
+  const csvContent = [headerRow1, headerRow2, ...rows]
     .map((row) => row.map(formatCsvCell).join(","))
     .join("\n");
 
@@ -391,11 +423,23 @@ function exportCsv() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `报销记录_${getTodayString()}.csv`;
+  link.download = `公司报销申请表_${getTodayString()}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+function formatInvoiceCategoryForExport(invoiceCategory) {
+  // 模板里写的是“纸质票”，这里把页面里的“纸质发票”转成模板叫法。
+  if (invoiceCategory === "纸质发票") return "纸质票";
+  return invoiceCategory || "";
+}
+
+function formatRemarkForExport(record) {
+  // 模板只有“备注/事由”一列，所以把“用途/商户”和“备注/事由”合并，避免丢信息。
+  const parts = [record.merchant, record.note].filter(Boolean);
+  return parts.join("；");
 }
 
 function formatCsvCell(value) {
