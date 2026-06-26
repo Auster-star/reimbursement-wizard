@@ -1,2 +1,53 @@
-# reimbursement-wizard
-A simple reimbursement record wizard
+# 问答式报销记录网页
+
+这是一个最小可用的报销记录小网页。
+
+它的目标是：不要让用户直接面对一整张 Excel 表，而是一次只回答一个问题，最后把记录保存起来并导出 CSV。
+
+## 功能
+
+- 一次只问一个问题
+- 记录金额、费用类别、用途/商户、发票类别、备注/事由、申请人、报销日期
+- 发票类别包括：电子发票、定额发票、出租车机打发票、纸质发票、无发票、其他
+- 数据保存在浏览器 localStorage
+- 查看全部记录
+- 按费用类别汇总金额
+- 导出 CSV，可以用 Excel 打开
+- 清空全部记录
+
+## 本地打开
+
+直接双击 `index.html`，用浏览器打开即可。
+
+这个项目没有后端、没有数据库、没有安装依赖，也不需要 npm。
+
+## 上传到 GitHub
+
+把以下四个文件上传到仓库根目录：
+
+- `index.html`
+- `style.css`
+- `app.js`
+- `README.md`
+
+## 发布到 GitHub Pages
+
+1. 打开 GitHub 仓库。
+2. 进入 `Settings`。
+3. 左侧点击 `Pages`。
+4. `Source` 选择 `Deploy from a branch`。
+5. `Branch` 选择 `main`。
+6. 文件夹选择 `/root`。
+7. 点击 `Save`。
+
+稍等一会儿后，GitHub 会生成一个网页链接，格式一般是：
+
+```text
+https://你的用户名.github.io/reimbursement-wizard/
+```
+
+## 重要说明
+
+当前版本是纯前端网页。数据只保存在当前浏览器里。
+
+也就是说，如果你把链接发给别人，对方填写的数据会保存在对方自己的浏览器里，不会自动同步到你的电脑。对方需要点击“导出 CSV”，再把文件发给你。
