@@ -54,12 +54,6 @@ const steps = [
     type: "options",
     options: invoiceCategories,
   },
-  {
-    key: "reimbursementDate",
-    title: "报销日期是哪天？",
-    help: "默认是今天，也可以手动修改。",
-    type: "date",
-  },
 ];
 
 let currentStepIndex = 0;
@@ -138,7 +132,7 @@ function createEmptyRecord() {
     invoiceCategory: "",
     note: "",
     applicant: "",
-    reimbursementDate: today,
+    reimbursementDate: "",
   };
 }
 
@@ -399,8 +393,8 @@ function buildReimbursementWorkbook(records, categories) {
   };
   const cols = "ABCDEFGHIJKLMNO".split("");
   const header1 = ["申请日期", "报销金额", "", "", "", "", "", "", "", "", "", "发票", "备注/事由", "申请人", "报销日期"];
-  const header2 = ["", ...categories, "合计", "技术公司电子发票/定额/出租车机打发票/纸质票/无发票", "", "", ""];
-  const rows = [header1, header2].map((values, index) => `<row r="${index + 1}" ht="32" customHeight="1">${values.map((v, i) => cell(cols[i] + (index + 1), v, 1)).join("")}</row>`);
+  const header2 = ["", ...categories, "合计", "技术公司电子发票/定额/\n出租车机打发票/纸质票/\n无发票", "", "", ""];
+  const rows = [header1, header2].map((values, index) => `<row r="${index + 1}" ht="${index === 0 ? 32 : 64}" customHeight="1">${values.map((v, i) => cell(cols[i] + (index + 1), v, 1)).join("")}</row>`);
   records.forEach((record, index) => {
     const r = index + 3;
     const parsedAmount = Number(record.amount);
@@ -415,14 +409,14 @@ function buildReimbursementWorkbook(records, categories) {
     values.push(cell(`L${r}`, record.invoiceCategory === "纸质发票" ? "纸质票" : record.invoiceCategory));
     values.push(cell(`M${r}`, remark, 4));
     values.push(cell(`N${r}`, record.applicant));
-    values.push(dateCell(`O${r}`, record.reimbursementDate));
+    values.push(cell(`O${r}`, ""));
     rows.push(`<row r="${r}" ht="${height}" customHeight="1">${values.join("")}</row>`);
   });
   const ns = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
-  const widths = [15, 12, 12, 12, 18, 16, 12, 12, 12, 12, 14, 20, 36, 14, 15];
-  const merges = ["A1:A2", "B1:K1", "L2:O2"];
+  const widths = [15, 12, 12, 12, 18, 16, 12, 12, 12, 12, 14, 24, 36, 14, 15];
+  const merges = ["A1:A2", "B1:K1"];
   const worksheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet ${ns}><dimension ref="A1:O${records.length + 2}"/><sheetViews><sheetView workbookViewId="0" showGridLines="0"><pane ySplit="2" topLeftCell="A3" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="30"/><cols>${widths.map((width, i) => `<col min="${i + 1}" max="${i + 1}" width="${width}" customWidth="1"/>`).join("")}</cols><sheetData>${rows.join("")}</sheetData><mergeCells count="3">${merges.map(ref => `<mergeCell ref="${ref}"/>`).join("")}</mergeCells><printOptions horizontalCentered="1"/><pageMargins left="0.25" right="0.25" top="0.4" bottom="0.4" header="0.2" footer="0.2"/><pageSetup paperSize="8" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+<worksheet ${ns}><dimension ref="A1:O${records.length + 2}"/><sheetViews><sheetView workbookViewId="0" showGridLines="0"><pane ySplit="2" topLeftCell="A3" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="30"/><cols>${widths.map((width, i) => `<col min="${i + 1}" max="${i + 1}" width="${width}" customWidth="1"/>`).join("")}</cols><sheetData>${rows.join("")}</sheetData><mergeCells count="2">${merges.map(ref => `<mergeCell ref="${ref}"/>`).join("")}</mergeCells><printOptions horizontalCentered="1"/><pageMargins left="0.25" right="0.25" top="0.4" bottom="0.4" header="0.2" footer="0.2"/><pageSetup paperSize="8" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`;
   const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet ${ns}><numFmts count="1"><numFmt numFmtId="164" formatCode="yyyy-mm-dd"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Microsoft YaHei"/></font><font><b/><sz val="11"/><color rgb="FF000000"/><name val="Microsoft YaHei"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFCBD5E1"/></left><right style="thin"><color rgb="FFCBD5E1"/></right><top style="thin"><color rgb="FFCBD5E1"/></top><bottom style="thin"><color rgb="FFCBD5E1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="5"><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="4" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf><xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
   const files = {
