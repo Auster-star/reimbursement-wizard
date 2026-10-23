@@ -28,7 +28,7 @@ const invoiceCategories = [
 const steps = [
   {
     key: "amount",
-    title: "这笔钱花了多少钱？",
+    title: "花了多少钱？",
     help: "请输入数字，例如 28、35.5、120.00。",
     type: "number",
     placeholder: "请输入金额",
@@ -53,20 +53,6 @@ const steps = [
     help: "如果没有发票，直接选择“无发票”。",
     type: "options",
     options: invoiceCategories,
-  },
-  {
-    key: "note",
-    title: "备注或事由是什么？",
-    help: "写清楚为什么花这笔钱，方便之后报销审核。",
-    type: "textarea",
-    placeholder: "例如：6月10日拜访客户交通费",
-  },
-  {
-    key: "applicant",
-    title: "申请人是谁？",
-    help: "请输入报销申请人的姓名。",
-    type: "text",
-    placeholder: "请输入申请人",
   },
   {
     key: "reimbursementDate",
